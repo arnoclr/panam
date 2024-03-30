@@ -15,18 +15,26 @@ export interface SimpleDeparture {
   id: string
 }
 
+const hostname = window.location.hostname
+
 export class Wagon {
   private static BASE_URL = "https://api-wagon.arno.cl/gantry/"
   private static LOCAL_BASE_URL = "http://localhost:8787/gantry/"
 
   private static get baseUrl(): string {
-    const hostname = window.location.hostname
-
     if (hostname === "localhost") {
       return Wagon.LOCAL_BASE_URL
     }
 
     return Wagon.BASE_URL
+  }
+
+  private static get apiKey(): string {
+    if (hostname === "localhost") {
+      return "vite"
+    }
+
+    return "pist"
   }
 
   public static async getDeparturesNear(
@@ -42,7 +50,7 @@ export class Wagon {
     params.append("action", "departuresNearby")
     params.append("coordinates", `${lat},${lon}`)
     params.append("compatibilityDate", "2024-03-30")
-    params.append("apiKey", "vite")
+    params.append("apiKey", this.apiKey)
 
     const response = await fetch(`${this.baseUrl}?${params.toString()}`)
 
