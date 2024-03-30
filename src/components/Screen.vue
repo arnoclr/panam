@@ -8,14 +8,20 @@ import Header from "./Header.vue"
 import WaitingTime from "./WaitingTime.vue"
 import EmptyState from "./EmptyState.vue"
 
+const props = defineProps<{
+  lat: number
+  lon: number
+  lineNumber: string
+}>()
+
 const departures = ref<SimpleDeparture[]>([])
 const line = ref<SimpleLine>()
 
 async function updateDepartures() {
   const data = await Wagon.getDeparturesNear(
-    48.89731282028599,
-    2.3873289121837495,
-    "139"
+    props.lat,
+    props.lon,
+    props.lineNumber
   )
   departures.value = data.departures
     .sort((a, b) => a.leavesAt.diff(b.leavesAt))

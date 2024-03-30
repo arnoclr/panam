@@ -54,12 +54,21 @@ export class Wagon {
     }
 
     const departures: SimpleDeparture[] = []
+    let stopId: string | null = null
 
     for (const line of json.data.departures) {
       if (line.lineRef !== lineDto.id) continue
 
       for (const branch of line.destinations) {
         for (const destination of branch) {
+          if (stopId === null) {
+            stopId = destination.source
+          }
+
+          if (stopId !== destination.source) {
+            continue
+          }
+
           for (const departure of destination.nextDepartures) {
             if (departure.departure.canceled) continue
 
