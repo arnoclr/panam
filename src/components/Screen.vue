@@ -12,6 +12,7 @@ const props = defineProps<{
   lat: number
   lon: number
   lineNumber: string
+  directionTextHint: string | null
 }>()
 
 const departures = ref<SimpleDeparture[]>([])
@@ -23,7 +24,21 @@ async function updateDepartures() {
     props.lon,
     props.lineNumber
   )
+
+  const branchHashOfDirectionHint = data.departures.find(
+    (x) =>
+      props.directionTextHint !== null &&
+      x.destination
+        .toLocaleLowerCase()
+        .includes(props.directionTextHint.toLocaleLowerCase())
+  )?.branchHash
+
   departures.value = data.departures
+    .filter((x) =>
+      branchHashOfDirectionHint
+        ? x.branchHash === branchHashOfDirectionHint
+        : true
+    )
     .sort((a, b) => a.leavesAt.diff(b.leavesAt))
     .slice(0, 3)
   line.value = data.line

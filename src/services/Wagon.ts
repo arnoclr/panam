@@ -13,6 +13,7 @@ export interface SimpleDeparture {
   destination: string
   leavesAt: Dayjs
   id: string
+  branchHash?: string
 }
 
 const hostname = window.location.hostname
@@ -96,6 +97,7 @@ export class Wagon {
                 departure.departure.realTime || departure.departure.theoretical
               ),
               id: departure.journeyId,
+              branchHash: departure.branchHash,
             })
           }
         }

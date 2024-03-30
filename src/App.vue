@@ -7,6 +7,7 @@ import dayjs from "dayjs"
 const lat = ref<number | null>(null)
 const lon = ref<number | null>(null)
 const lineNumber = ref<string | null>(null)
+const directionHint = ref<string | null>(null)
 
 function loadParamsFromUrl() {
   const urlParams = new URLSearchParams(window.location.search)
@@ -15,6 +16,7 @@ function loadParamsFromUrl() {
   lat.value = coordinates?.[0] ? parseFloat(coordinates[0]) : null
   lon.value = coordinates?.[1] ? parseFloat(coordinates[1]) : null
   lineNumber.value = urlParams.get("for") ?? ""
+  directionHint.value = urlParams.get("directionHint") ?? null
 }
 
 onMounted(() => {
@@ -34,6 +36,7 @@ onMounted(() => {
     :lat="lat"
     :lon="lon"
     :line-number="lineNumber"
+    :direction-text-hint="directionHint"
   ></Screen>
   <Form v-else></Form>
   <footer>
