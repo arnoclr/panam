@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>Temps d'attente indiponibles.</p>
+    <p>Temps d'attente indisponibles.</p>
   </div>
 </template>
 
