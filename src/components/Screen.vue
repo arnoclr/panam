@@ -76,7 +76,7 @@ const nextDeparturesGoesToSameDestination = computed<boolean>(() => {
 
 useIntervalFn(async () => {
   await updateDepartures()
-}, 40 * 1000)
+}, 61 * 1000)
 
 onMounted(async () => {
   await updateDepartures()
