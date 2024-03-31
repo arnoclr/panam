@@ -1,8 +1,30 @@
+<script lang="ts" setup>
+import { ref } from "vue"
+
+const position = ref<string>("")
+
+function fillFieldWithCurrentLocation() {
+  navigator.geolocation.getCurrentPosition((p) => {
+    const { latitude, longitude } = p.coords
+    position.value = `${latitude}, ${longitude}`
+  })
+}
+</script>
+
 <template>
   <form action="/" method="get">
     <label>
       <p>Coordonnées GPS de l'arrêt</p>
-      <input type="text" name="near" placeholder="48.8534, 2.3122" required />
+      <input
+        type="text"
+        v-model="position"
+        name="near"
+        placeholder="48.8534, 2.3122"
+        required
+      />
+      <button type="button" @click="fillFieldWithCurrentLocation">
+        Utiliser la position actuelle
+      </button>
     </label>
     <label>
       <p>Numéro de la ligne</p>
