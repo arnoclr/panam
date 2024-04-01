@@ -3,10 +3,11 @@ import { useIntervalFn } from "@vueuse/core"
 import { computed, onMounted, ref } from "vue"
 import type { SimpleDeparture, SimpleLine } from "../services/Wagon"
 import { Wagon } from "../services/Wagon"
+import CurrentTime from "./CurrentTime.vue"
 import DepartureRow from "./DepartureRow.vue"
+import EmptyState from "./EmptyState.vue"
 import Header from "./Header.vue"
 import WaitingTime from "./WaitingTime.vue"
-import EmptyState from "./EmptyState.vue"
 
 const props = defineProps<{
   lat: number
@@ -85,7 +86,9 @@ onMounted(async () => {
 
 <template>
   <main>
+    <CurrentTime class="clock"></CurrentTime>
     <Header
+      class="header"
       v-if="line"
       :line="line"
       :direction="mostCommonDestination"
@@ -123,6 +126,12 @@ main {
   grid-template-rows: auto 1fr;
 }
 
+.clock {
+  position: absolute;
+  top: 0;
+  right: 2vw;
+}
+
 ul {
   padding: 1rem;
   margin: 0;
@@ -139,16 +148,36 @@ section {
 }
 
 article {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 50%;
 }
 
+article:last-child::before {
+  --offset: 25%;
+  content: "";
+  position: absolute;
+  top: var(--offset);
+  left: 0;
+  bottom: var(--offset);
+  width: 1vw;
+  background-color: white;
+  border-radius: 999px;
+}
+
 article span {
+  margin-left: 2vw;
   color: white;
 }
 
 article time {
   align-self: center;
+}
+
+@media (max-height: 40vw) {
+  .header {
+    display: none;
+  }
 }
 </style>

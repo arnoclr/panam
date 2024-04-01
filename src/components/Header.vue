@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { SimpleLine } from "../services/Wagon"
+import { toCSSColor } from "../utils/Colors"
 import LineIndicator from "./LineIndicator.vue"
 
 defineProps<{
@@ -9,7 +10,7 @@ defineProps<{
 </script>
 
 <template>
-  <header>
+  <header :style="{ '--line-color': toCSSColor(line.backgroundColor) }">
     <div role="group">
       <img :src="line.pictoPng" alt="" />
       <LineIndicator :line="line" height="5vw"></LineIndicator>
@@ -27,9 +28,10 @@ header,
 }
 
 header {
-  padding: 1rem 2rem;
+  padding: 2.5vw 2vw;
   background-color: white;
   gap: 2vw;
+  border-bottom: 2vw solid var(--line-color);
 }
 
 h1 {
