@@ -37,4 +37,10 @@ span:nth-child(2) {
     opacity: 0.5;
   }
 }
+
+@media (max-height: 40vw) {
+  time {
+    font-size: 3.5vw;
+  }
+}
 </style>

@@ -57,7 +57,25 @@ time {
 }
 
 .blinking {
-  animation: blink 1s infinite steps(1);
+  animation: blink-number 1s infinite;
+}
+
+@keyframes blink-number {
+  0% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  90% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes blink {
@@ -65,7 +83,7 @@ time {
     opacity: 1;
   }
 
-  30% {
+  20% {
     opacity: 0.5;
   }
 

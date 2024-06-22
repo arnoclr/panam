@@ -167,8 +167,8 @@ img {
 }
 
 [role="group"] {
-  --incident-color: #ff0000;
-  --stopped-color: #ff9900;
+  --stopped-color: #ff1400;
+  --incident-color: #ff8c00;
   width: fit-content;
   height: var(--size-vw);
   display: flex;

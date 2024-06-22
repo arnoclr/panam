@@ -11,8 +11,25 @@ const rotatingDisruptions = ref<SimpleDisruption[]>([])
 const isAnimating = ref(true)
 
 watchEffect(() => {
-  rotatingDisruptions.value = [...props.disruptions]
+  rotatingDisruptions.value = [...filterDisruptions()]
 })
+
+function filterDisruptions() {
+  if (props.disruptions.length < 6) {
+    return props.disruptions
+  }
+
+  return props.disruptions.filter(
+    (x) => x.type === "stoppedService" || x.type === "incident"
+  )
+}
+
+function enhanceDisruptionText(text: string): string {
+  const estimatedTimeRegex = /\d{1,2}(?::\d{2}|h)/gi
+  return text.replace(estimatedTimeRegex, (match) => {
+    return `<time>${match}</time>`
+  })
+}
 
 function triggerAnimation() {
   isAnimating.value = false
@@ -48,7 +65,7 @@ onMounted(() => {
       </div>
       <div role="row">
         <LineIndicator
-          v-for="disruption in rotatingDisruptions.slice(1)"
+          v-for="disruption in rotatingDisruptions.slice(1, 4)"
           :disruption="disruption"
           size="small"
           class="indicator"
@@ -56,7 +73,7 @@ onMounted(() => {
       </div>
     </header>
     <div class="content">
-      <p>{{ rotatingDisruptions[0].description }}</p>
+      <p v-html="enhanceDisruptionText(rotatingDisruptions[0].description)"></p>
     </div>
   </aside>
 </template>
@@ -64,6 +81,9 @@ onMounted(() => {
 <style scoped>
 aside {
   height: 100%;
+  max-width: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
   background-color: white;
 }
 
@@ -82,8 +102,29 @@ header {
 }
 
 .content {
-  padding: 1vw 2vw;
-  font-size: 3.2vw;
+  --font-size: 3.2vw;
+  display: grid;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 2vw;
+  font-size: var(--font-size);
+}
+
+.content p {
+  margin: 0;
+  max-height: calc(var(--font-size) * 0.98 * 6);
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.content p:deep(time) {
+  padding: 0.2vw 0.5vw;
+  background-color: rgb(73, 73, 73);
+  border-radius: 0.5vw;
+  color: white;
 }
 
 [role="row"] {
@@ -92,6 +133,7 @@ header {
   padding: 0 2vw;
   display: flex;
   gap: 1.5vw;
+  overflow: hidden;
 }
 
 [appear="true"] .current .indicator,
@@ -125,7 +167,7 @@ header {
 
 @media (max-height: 40vw) {
   header .current {
-    padding-top: 3vw;
+    padding-top: 2vw;
   }
 }
 </style>

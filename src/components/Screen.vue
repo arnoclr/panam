@@ -201,7 +201,7 @@ article:last-child::before {
 article span {
   margin-left: 2vw;
   color: white;
-  font-size: 1.6rem;
+  font-size: 2vw;
 }
 
 article time {

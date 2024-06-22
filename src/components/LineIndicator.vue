@@ -90,7 +90,7 @@ span {
   top: 0;
   left: 0;
   right: 0;
-  height: 0.4em;
+  height: calc(var(--height) * 0.1);
   border-radius: 9999px;
   background-color: var(--background-color);
 }
