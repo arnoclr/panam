@@ -28,7 +28,7 @@ header,
 }
 
 header {
-  padding: 1vw 2vw;
+  padding: 1vw calc(env(safe-area-inset-left) + 2vw);
   background-color: white;
   gap: 2vw;
   border-bottom: 2vw solid var(--line-color);

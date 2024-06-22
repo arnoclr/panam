@@ -159,7 +159,7 @@ main {
 .clock {
   position: absolute;
   top: 0;
-  right: 2vw;
+  right: calc(env(safe-area-inset-left) + 2vw);
   z-index: 1;
 }
 
@@ -175,6 +175,7 @@ ul {
 section {
   height: 100%;
   padding: 0 0.5rem;
+  padding-left: env(safe-area-inset-left);
   display: flex;
   align-items: center;
   overflow: hidden;

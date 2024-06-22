@@ -110,6 +110,7 @@ header {
   box-sizing: border-box;
   overflow: hidden;
   padding: 2vw;
+  padding-right: env(safe-area-inset-right);
   font-size: var(--font-size);
 }
 
