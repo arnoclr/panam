@@ -33,7 +33,7 @@ watch(
 
 <template>
   <time :style="{ fontSize }" :datetime="at.format()">
-    <div v-if="showDots || true" class="dots">
+    <div v-if="showDots" class="dots">
       <div class="dot"></div>
       <div class="dot"></div>
       <div class="dot"></div>

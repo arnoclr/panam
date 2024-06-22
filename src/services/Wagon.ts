@@ -171,8 +171,6 @@ export class Wagon {
       this.lineFromDTO(line)
     )
 
-    console.log(json.data)
-
     const disruptions: SimpleDisruption[] = []
 
     for (const disruption of json.data.disruptions) {
