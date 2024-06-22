@@ -13,7 +13,7 @@ defineProps<{
   <header :style="{ '--line-color': toCSSColor(line.backgroundColor) }">
     <div role="group">
       <img :src="line.pictoPng" alt="" />
-      <LineIndicator :line="line" height="5vw"></LineIndicator>
+      <LineIndicator :line="line" height="8vw"></LineIndicator>
     </div>
     <h1>{{ direction }}</h1>
   </header>
@@ -28,7 +28,7 @@ header,
 }
 
 header {
-  padding: 2.5vw 2vw;
+  padding: 1vw 2vw;
   background-color: white;
   gap: 2vw;
   border-bottom: 2vw solid var(--line-color);
@@ -41,7 +41,13 @@ h1 {
 }
 
 img {
-  height: 5vw;
+  height: 8vw;
   width: auto;
+}
+
+@media (max-height: 60vw) {
+  header {
+    border-bottom: none;
+  }
 }
 </style>

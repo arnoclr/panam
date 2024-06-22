@@ -16,6 +16,12 @@ export interface SimpleDeparture {
   branchHash?: string
 }
 
+export interface SimpleDisruption {
+  description: string
+  line: SimpleLine
+  type: "worksite" | "info" | "incident" | "stoppedService"
+}
+
 const hostname = window.location.hostname
 
 export class Wagon {
@@ -36,6 +42,17 @@ export class Wagon {
     }
 
     return "pist"
+  }
+
+  private static lineFromDTO(lineDto: any): SimpleLine {
+    return {
+      id: lineDto.id,
+      number: lineDto.number,
+      backgroundColor: lineDto.backgroundColor,
+      textColor: lineDto.textColor,
+      backgroundShape: lineDto.shape,
+      pictoPng: lineDto.picto,
+    }
   }
 
   public static async getDeparturesNear(
@@ -63,14 +80,7 @@ export class Wagon {
 
     const lineDto = json.data.lines.find((x: any) => x.number === lineNumber)
 
-    const line: SimpleLine = {
-      id: lineDto.id,
-      number: lineDto.number,
-      backgroundColor: lineDto.backgroundColor,
-      textColor: lineDto.textColor,
-      backgroundShape: lineDto.shape,
-      pictoPng: lineDto.picto,
-    }
+    const line = this.lineFromDTO(lineDto)
 
     const departures: SimpleDeparture[] = []
     let stopId: string | null = null
@@ -108,5 +118,78 @@ export class Wagon {
       departures,
       line,
     }
+  }
+
+  private static getDisruptionType(
+    cause: string,
+    effect: string
+  ): SimpleDisruption["type"] {
+    if (effect === "stoppedService") {
+      return "stoppedService"
+    }
+
+    if (cause === "worksite") {
+      return "worksite"
+    }
+
+    if (
+      ["delays", "movedStops", "nonDesservedStops", "reducedService"].includes(
+        effect
+      )
+    ) {
+      return "incident"
+    }
+
+    return "info"
+  }
+
+  public static async getDisruptions(
+    lat: number,
+    lon: number,
+    line: string,
+    currentStop: string,
+    terminus: string
+  ): Promise<SimpleDisruption[]> {
+    let params = new URLSearchParams()
+
+    params.append("action", "disruptionsAlongLine")
+    params.append("coordinates", `${lat},${lon}`)
+    params.append("compatibilityDate", "2024-06-22")
+    params.append("line", line)
+    params.append("stops", JSON.stringify([currentStop, terminus]))
+    params.append("apiKey", this.apiKey)
+
+    const response = await fetch(`${this.baseUrl}?${params.toString()}`)
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch disruptions")
+    }
+
+    const json = await response.json()
+
+    const lines: SimpleLine[] = json.data.lines.map((line: any) =>
+      this.lineFromDTO(line)
+    )
+
+    console.log(json.data)
+
+    const disruptions: SimpleDisruption[] = []
+
+    for (const disruption of json.data.disruptions) {
+      const line = lines.find((x) => x.id === disruption.routeId)
+
+      if (!line) {
+        console.error("Line not found for disruption", disruption)
+        continue
+      }
+
+      disruptions.push({
+        description: disruption.details,
+        line,
+        type: this.getDisruptionType(disruption.cause, disruption.effect),
+      })
+    }
+
+    return disruptions
   }
 }

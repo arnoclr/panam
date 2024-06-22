@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import { useIntervalFn } from "@vueuse/core"
 import { computed, onMounted, ref } from "vue"
-import type { SimpleDeparture, SimpleLine } from "../services/Wagon"
+import type {
+  SimpleDeparture,
+  SimpleDisruption,
+  SimpleLine,
+} from "../services/Wagon"
 import { Wagon } from "../services/Wagon"
 import CurrentTime from "./CurrentTime.vue"
 import DepartureRow from "./DepartureRow.vue"
 import EmptyState from "./EmptyState.vue"
 import Header from "./Header.vue"
 import WaitingTime from "./WaitingTime.vue"
+import Slider from "./disruptions/Slider.vue"
 
 const props = defineProps<{
   lat: number
@@ -17,6 +22,7 @@ const props = defineProps<{
 }>()
 
 const departures = ref<SimpleDeparture[]>([])
+const disruptions = ref<SimpleDisruption[]>([])
 const line = ref<SimpleLine>()
 
 async function updateDepartures() {
@@ -75,12 +81,33 @@ const nextDeparturesGoesToSameDestination = computed<boolean>(() => {
   )
 })
 
+async function updateDisruptions() {
+  const lineId = line.value?.id
+
+  if (!lineId) {
+    return
+  }
+
+  disruptions.value = await Wagon.getDisruptions(
+    props.lat,
+    props.lon,
+    lineId,
+    "",
+    ""
+  )
+}
+
 useIntervalFn(async () => {
   await updateDepartures()
 }, 61 * 1000)
 
+useIntervalFn(async () => {
+  await updateDisruptions()
+}, 5 * 60 * 1000)
+
 onMounted(async () => {
   await updateDepartures()
+  await updateDisruptions()
 })
 </script>
 
@@ -94,27 +121,30 @@ onMounted(async () => {
       :direction="mostCommonDestination"
     ></Header>
     <EmptyState v-if="departures.length === 0"></EmptyState>
-    <TransitionGroup
-      tag="section"
-      name="horizontal"
-      v-else-if="nextDeparturesGoesToSameDestination"
-    >
-      <article
-        v-for="(departure, i) in departures.slice(0, 2)"
-        :key="departure.id"
+    <div class="withDisruptions">
+      <TransitionGroup
+        tag="section"
+        name="horizontal"
+        v-if="nextDeparturesGoesToSameDestination"
       >
-        <span v-if="i == 0">1<sup>er</sup> métro</span>
-        <span v-if="i == 1">2<sup>e</sup> métro</span>
-        <WaitingTime font-size="20vw" :at="departure.leavesAt"></WaitingTime>
-      </article>
-    </TransitionGroup>
-    <TransitionGroup name="vertical" tag="ul" v-else>
-      <DepartureRow
-        v-for="departure in departures"
-        :departure="departure"
-        :key="departure.id"
-      ></DepartureRow>
-    </TransitionGroup>
+        <article
+          v-for="(departure, i) in departures.slice(0, 2)"
+          :key="departure.id"
+        >
+          <span v-if="i == 0">1<sup>er</sup> métro</span>
+          <span v-if="i == 1">2<sup>e</sup> métro</span>
+          <WaitingTime font-size="18vw" :at="departure.leavesAt"></WaitingTime>
+        </article>
+      </TransitionGroup>
+      <TransitionGroup name="vertical" tag="ul" v-else>
+        <DepartureRow
+          v-for="departure in departures"
+          :departure="departure"
+          :key="departure.id"
+        ></DepartureRow>
+      </TransitionGroup>
+      <Slider :disruptions="disruptions"></Slider>
+    </div>
   </main>
 </template>
 
@@ -130,6 +160,7 @@ main {
   position: absolute;
   top: 0;
   right: 2vw;
+  z-index: 1;
 }
 
 ul {
@@ -142,7 +173,7 @@ ul {
 }
 
 section {
-  padding: 2rem 3rem;
+  padding: 2rem 0.5rem;
   display: flex;
   align-items: start;
 }
@@ -169,15 +200,27 @@ article:last-child::before {
 article span {
   margin-left: 2vw;
   color: white;
+  font-size: 1.6rem;
 }
 
 article time {
   align-self: center;
 }
 
+.withDisruptions {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
 @media (max-height: 40vw) {
   .header {
     display: none;
+  }
+}
+
+@media (max-height: 60vw) {
+  .withDisruptions {
+    grid-template-columns: 1fr 1fr;
   }
 }
 </style>
