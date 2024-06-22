@@ -177,6 +177,7 @@ section {
   padding: 0 0.5rem;
   display: flex;
   align-items: center;
+  overflow: hidden;
 }
 
 article {
