@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { nextTick, onMounted, onUnmounted, ref, watchEffect } from "vue"
+import { onMounted, onUnmounted, ref, watchEffect } from "vue"
 import { SimpleDisruption } from "../../services/Wagon"
 import LineIndicator from "./LineIndicator.vue"
 
