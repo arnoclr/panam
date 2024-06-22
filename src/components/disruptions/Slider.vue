@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref, watchEffect } from "vue"
+import { nextTick, onMounted, onUnmounted, ref, watchEffect } from "vue"
 import { SimpleDisruption } from "../../services/Wagon"
 import LineIndicator from "./LineIndicator.vue"
 
@@ -25,7 +25,7 @@ function filterDisruptions() {
 }
 
 function enhanceDisruptionText(text: string): string {
-  const estimatedTimeRegex = /\d{1,2}(?::\d{2}|h)/gi
+  const estimatedTimeRegex = /\d{1,2}(?::\d{2}|h\d{0,2})/gi
   return text.replace(estimatedTimeRegex, (match) => {
     return `<time>${match}</time>`
   })
@@ -33,9 +33,11 @@ function enhanceDisruptionText(text: string): string {
 
 function triggerAnimation() {
   isAnimating.value = false
-  setTimeout(() => {
-    isAnimating.value = true
-  }, 10)
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      isAnimating.value = true
+    })
+  })
 }
 
 onMounted(() => {
