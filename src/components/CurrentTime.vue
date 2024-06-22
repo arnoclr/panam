@@ -24,7 +24,7 @@ time {
   padding: 0.6vw 1.2vw;
   background-color: black;
   color: var(--waiting-time-color);
-  font-size: 4vw;
+  font-size: 5.5vw;
   border-radius: 0 0 var(--border-radius) var(--border-radius);
 }
 

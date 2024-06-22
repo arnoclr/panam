@@ -173,9 +173,10 @@ ul {
 }
 
 section {
-  padding: 2rem 0.5rem;
+  height: 100%;
+  padding: 0 0.5rem;
   display: flex;
-  align-items: start;
+  align-items: center;
 }
 
 article {
@@ -208,11 +209,17 @@ article time {
 }
 
 .withDisruptions {
+  height: 100%;
   display: grid;
   grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
 }
 
 @media (max-height: 40vw) {
+  main {
+    grid-template-rows: 1fr;
+  }
+
   .header {
     display: none;
   }

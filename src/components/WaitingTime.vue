@@ -33,7 +33,7 @@ watch(
 
 <template>
   <time :style="{ fontSize }" :datetime="at.format()">
-    <div v-if="showDots" class="dots">
+    <div v-if="showDots || true" class="dots">
       <div class="dot"></div>
       <div class="dot"></div>
       <div class="dot"></div>
@@ -57,22 +57,18 @@ time {
 }
 
 .blinking {
-  animation: blink 1s infinite;
+  animation: blink 1s infinite steps(1);
 }
 
 @keyframes blink {
   0% {
     opacity: 1;
   }
-  40% {
-    opacity: 1;
-  }
-  50% {
+
+  30% {
     opacity: 0.5;
   }
-  90% {
-    opacity: 0.5;
-  }
+
   100% {
     opacity: 1;
   }
@@ -94,14 +90,14 @@ time {
   height: 0.2em;
   background-color: var(--waiting-time-color);
   border-radius: 50%;
-  animation: blink 1.4s infinite;
+  animation: blink 1.4s infinite steps(1);
 }
 
 .dot:nth-child(2) {
-  animation-delay: 0.2s;
+  animation-delay: 0.3s;
 }
 
 .dot:nth-child(3) {
-  animation-delay: 0.4s;
+  animation-delay: 0.6s;
 }
 </style>
