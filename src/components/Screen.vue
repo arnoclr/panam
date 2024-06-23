@@ -100,7 +100,6 @@ async function updateDisruptions() {
 
 const serviceIsSuspended = computed<boolean>(() => {
   // check if a disruption is stopped service on current line
-  return true
   return (
     disruptions.value.some(
       (disruption) =>
