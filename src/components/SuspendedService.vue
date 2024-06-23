@@ -104,6 +104,9 @@ section.screen {
 }
 
 article {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5vw;
   max-width: 56vw;
 }
 
@@ -111,7 +114,7 @@ svg {
   right: 6vw;
   bottom: 0;
   position: absolute;
-  height: 30vw;
+  height: min(30vw, 78vh);
   width: auto;
 }
 
@@ -156,6 +159,7 @@ li {
 }
 
 h2 {
+  margin: 0;
   font-size: 5vw;
 }
 
