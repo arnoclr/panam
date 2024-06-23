@@ -13,6 +13,7 @@ import EmptyState from "./EmptyState.vue"
 import Header from "./Header.vue"
 import WaitingTime from "./WaitingTime.vue"
 import Slider from "./disruptions/Slider.vue"
+import SuspendedService from "./SuspendedService.vue"
 
 const props = defineProps<{
   lat: number
@@ -97,6 +98,17 @@ async function updateDisruptions() {
   )
 }
 
+const serviceIsSuspended = computed<boolean>(() => {
+  // check if a disruption is stopped service on current line
+  return (
+    disruptions.value.some(
+      (disruption) =>
+        disruption.type === "stoppedService" &&
+        disruption.line.id === line.value?.id
+    ) && departures.value.length === 0
+  )
+})
+
 useIntervalFn(async () => {
   await updateDepartures()
 }, 61 * 1000)
@@ -116,12 +128,13 @@ onMounted(async () => {
     <CurrentTime class="clock"></CurrentTime>
     <Header
       class="header"
-      v-if="line"
+      v-if="line && !serviceIsSuspended"
       :line="line"
       :direction="mostCommonDestination"
     ></Header>
-    <EmptyState v-if="departures.length === 0"></EmptyState>
-    <div class="withDisruptions">
+    <SuspendedService v-if="serviceIsSuspended"></SuspendedService>
+    <EmptyState v-else-if="departures.length === 0"></EmptyState>
+    <div class="withDisruptions" v-else>
       <TransitionGroup
         tag="section"
         name="horizontal"
