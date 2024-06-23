@@ -78,7 +78,7 @@ export class Wagon {
 
     const json = await response.json()
 
-    const lineDto = json.data.lines.find((x: any) => x.number === lineNumber)
+    const lineDto = json.data.lines.find((x: any) => x.number.toUpperCase() === lineNumber.toUpperCase())
 
     const line = this.lineFromDTO(lineDto)
 
