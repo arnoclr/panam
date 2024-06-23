@@ -87,6 +87,7 @@ aside {
   display: grid;
   grid-template-rows: auto 1fr;
   background-color: white;
+  overflow: hidden;
 }
 
 header {
@@ -110,7 +111,7 @@ header {
   box-sizing: border-box;
   overflow: hidden;
   padding: 2vw;
-  padding-right: env(safe-area-inset-right);
+  padding-right: calc(env(safe-area-inset-right) + 2vw);
   font-size: var(--font-size);
 }
 
