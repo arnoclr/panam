@@ -1,9 +1,26 @@
-# Vue 3 + TypeScript + Vite
+# PANAM
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+![Aperçu](public/presentation.jpg)
 
-## Recommended Setup
+- Affichage des temps d'attente avec gros chiffres ou en colonnes s'il existe plusieurs destinations
+- Info trafic en temps réel des lignes en correspondance
+- Affichages spécifiques en cas d'absence de temps réel ou d'interruption de service
 
-- [VS Code](https://code.visualstudio.com/) + [Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (previously Volar) and disable Vetur
+Le but de ce projet est de fournir un écran unique qui puisse s'adapter en fonction de la taille de l'écran et de la ligne en cours pour respecter le style des écrans dans les gares et stations RATP.
 
-- Use [vue-tsc](https://github.com/vuejs/language-tools/tree/master/packages/tsc) for performing the same type checking from the command line, or for generating d.ts files for SFCs.
+## Lancer en local 
+
+```sh
+npm run dev
+```
+
+> La version locale utilise une API elle aussi locale. Sachant que le code source de celle-ci n'est pour l'heure pas disponible, il suffit d'utiliser l'API de production avec la même clé d'API que celle utilisée pour la version locale.
+
+## Contribuer
+
+Vous pouvez fork le projet pour proposer des pull requests.
+
+Pour les PR, merci de :
+- __Joindre des images__ réelles si les modifications concernent l'interface.
+- Indiquer les modifications effectuées et dans quel but. 
+- Ne pas inclure de fonctionnlités non existantes en vrai.
