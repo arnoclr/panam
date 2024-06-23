@@ -202,15 +202,16 @@ article {
 }
 
 article:last-child::before {
-  --offset: 25%;
+  --offset: 22%;
   content: "";
   position: absolute;
   top: var(--offset);
   left: 0;
   bottom: var(--offset);
-  width: 1vw;
+  width: 0.6vw;
   background-color: white;
   border-radius: 999px;
+  transform: translateY(12%);
 }
 
 article span {

@@ -169,6 +169,7 @@ img {
 [role="group"] {
   --stopped-color: #ff1400;
   --incident-color: #ff8c00;
+  --border-width: 0.2vw;
   width: fit-content;
   height: var(--size-vw);
   display: flex;
@@ -209,7 +210,8 @@ svg {
   height: 100%;
   width: 100%;
   border-radius: 20%;
-  border: 0.2vw solid white;
+  border: var(--border-width) solid white;
+  transform: translateY(var(--border-width));
 }
 
 .small.incident {
