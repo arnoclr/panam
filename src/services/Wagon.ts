@@ -9,6 +9,18 @@ export interface SimpleLine {
   pictoPng: string
 }
 
+export interface SimpleStop {
+  id: string
+  name: string
+  position: Position
+  lines: string[]
+}
+
+export interface Position {
+  lat: string
+  long: string
+}
+
 export interface SimpleDeparture {
   destination: string
   leavesAt: Dayjs
@@ -41,7 +53,24 @@ export class Wagon {
       return "vite"
     }
 
-    return "pist"
+    return "vite"
+  }
+  private static positionFromDTO(positionDto: any): Position {
+    return {
+      lat: positionDto[0],
+      long: positionDto[1],
+    }
+  }
+
+  private static stopFromDTO(stopDto: any): SimpleStop {
+    return {
+      id: stopDto.id,
+      name: stopDto.name,
+      position: this.positionFromDTO(stopDto.averagePosition),
+      lines: Array.from(
+        new Set(stopDto.stops.flatMap((stop: any) => stop.lines))
+      ),
+    }
   }
 
   private static lineFromDTO(lineDto: any): SimpleLine {
@@ -52,6 +81,39 @@ export class Wagon {
       textColor: lineDto.textColor,
       backgroundShape: lineDto.shape,
       pictoPng: lineDto.picto,
+    }
+  }
+
+  public static async searchStops(search: string): Promise<{
+    stops: SimpleStop[]
+    lines: SimpleLine[]
+  }> {
+    const params = new URLSearchParams()
+    params.append("action", "searchStops")
+    params.append("coordinates", "48.86,2.34")
+    params.append("compatibilityDate", "2024-03-30")
+    params.append("apiKey", this.apiKey)
+    params.append("q", search)
+
+    const response = await fetch(`${this.baseUrl}?${params.toString()}`)
+
+    if (!response.ok) {
+      throw new Error("Failed to search stations")
+    }
+
+    const json = await response.json()
+
+    const stops: SimpleStop[] = json.data.stops.map((stop: any) => {
+      return this.stopFromDTO(stop)
+    })
+
+    const lines: SimpleLine[] = json.data.lines.map((line: any) => {
+      return this.lineFromDTO(line)
+    })
+
+    return {
+      stops: stops,
+      lines: lines,
     }
   }
 
@@ -78,7 +140,9 @@ export class Wagon {
 
     const json = await response.json()
 
-    const lineDto = json.data.lines.find((x: any) => x.number.toUpperCase() === lineNumber.toUpperCase())
+    const lineDto = json.data.lines.find(
+      (x: any) => x.number.toUpperCase() === lineNumber.toUpperCase()
+    )
 
     const line = this.lineFromDTO(lineDto)
 
