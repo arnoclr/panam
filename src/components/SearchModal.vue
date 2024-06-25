@@ -17,13 +17,9 @@
             <button type="submit">Chercher</button>
           </form>
         </div>
-        <div class="results" v-if="stopsLines !== null">
-          <template v-for="stop in stopsLines.stops" :key="stop.id">
-            <Stop
-              :stop="stop"
-              :lines="stopsLines.lines.filter((line: SimpleLine) => stop.lines.includes(line.id))"
-              @selected="selectStop"
-            />
+        <div class="results" v-if="stops !== null">
+          <template v-for="stop in stops" :key="stop.id">
+            <Stop :stop="stop" @selected="selectStop" />
           </template>
         </div>
       </div>
@@ -33,13 +29,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue"
-import { Position, SimpleLine, SimpleStop, Wagon } from "../services/Wagon"
+import { Position, SimpleStop, Wagon } from "../services/Wagon"
 import Stop from "./Stop.vue"
 
 const search = ref<string>("")
-const stopsLines = ref<{ stops: SimpleStop[]; lines: SimpleLine[] } | null>(
-  null
-)
+const stops = ref<SimpleStop[] | null>(null)
 const { isOpen } = defineProps<{ isOpen: boolean }>()
 
 const emits = defineEmits<{
@@ -48,9 +42,11 @@ const emits = defineEmits<{
 }>()
 
 function selectStop(stopId: string, lineId: string) {
-  const stop = stopsLines.value?.stops.find((stop) => stop.id === stopId)
+  const stop = stops.value?.find((stop) => stop.id === stopId)
   const lineNumber =
-    stopsLines.value?.lines.find((line) => line.id === lineId)?.number || ""
+    stops.value
+      ?.find((stop) => stop.id === stopId)
+      ?.lines.find((line) => line.id === lineId)?.number || ""
   if (!stop || !stop.position) {
     throw new Error("Impossible de trouver la position de l'arrêt")
   }
@@ -70,7 +66,7 @@ async function searchStops() {
     return
   }
   const response = await Wagon.searchStops(search.value.trim())
-  stopsLines.value = { ...response } // Force Vue to detect change by creating a new object
+  stops.value = response
 }
 
 function closeDialog() {
@@ -106,9 +102,11 @@ dialog {
   flex-direction: column;
   max-height: 80vh;
 }
+
 dialog[open] {
   animation: slide 0.3s ease;
 }
+
 /* dialog not open */
 dialog:not([open]) {
   animation: slide 0.5s ease reverse;
@@ -119,17 +117,20 @@ dialog:not([open]) {
     opacity: 0;
     scale: 0.5;
   }
+
   100% {
     opacity: 1;
     scale: 1;
   }
 }
+
 .header {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
 }
+
 .backdrop {
   position: fixed;
   top: 0;
@@ -137,13 +138,16 @@ dialog:not([open]) {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 999; /* Ensure the backdrop is behind the dialog */
+  z-index: 999;
+  /* Ensure the backdrop is behind the dialog */
 }
+
 .search-stops {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  flex-grow: 1; /* Ensures the search-stops section takes up available space */
+  flex-grow: 1;
+  /* Ensures the search-stops section takes up available space */
 }
 
 .search {
@@ -157,6 +161,7 @@ dialog:not([open]) {
   flex-direction: column;
   gap: 0.2rem;
   overflow-y: auto;
-  max-height: 50vh; /* Adjust this value to control the scrollable area */
+  max-height: 50vh;
+  /* Adjust this value to control the scrollable area */
 }
 </style>

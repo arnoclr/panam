@@ -13,12 +13,12 @@ export interface SimpleStop {
   id: string
   name: string
   position: Position
-  lines: string[]
+  lines: SimpleLine[]
 }
 
 export interface Position {
-  lat: string
-  long: string
+  lat: number
+  long: number
 }
 
 export interface SimpleDeparture {
@@ -44,7 +44,6 @@ export class Wagon {
     if (hostname === "localhost") {
       return Wagon.LOCAL_BASE_URL
     }
-
     return Wagon.BASE_URL
   }
 
@@ -62,14 +61,19 @@ export class Wagon {
     }
   }
 
-  private static stopFromDTO(stopDto: any): SimpleStop {
+  private static stopFromDTO(stopDto: any, lines: SimpleLine[]): SimpleStop {
+    const linesIds = Array.from(
+      new Set(
+        stopDto.stops
+          .map((stop: any) => stop.lines.map((line: any) => line))
+          .flat()
+      )
+    )
     return {
       id: stopDto.id,
       name: stopDto.name,
       position: this.positionFromDTO(stopDto.averagePosition),
-      lines: Array.from(
-        new Set(stopDto.stops.flatMap((stop: any) => stop.lines))
-      ),
+      lines: lines.filter((line) => linesIds.includes(line.id)),
     }
   }
 
@@ -84,10 +88,7 @@ export class Wagon {
     }
   }
 
-  public static async searchStops(search: string): Promise<{
-    stops: SimpleStop[]
-    lines: SimpleLine[]
-  }> {
+  public static async searchStops(search: string): Promise<SimpleStop[]> {
     const params = new URLSearchParams()
     params.append("action", "searchStops")
     params.append("coordinates", "48.86,2.34")
@@ -103,18 +104,15 @@ export class Wagon {
 
     const json = await response.json()
 
-    const stops: SimpleStop[] = json.data.stops.map((stop: any) => {
-      return this.stopFromDTO(stop)
-    })
-
     const lines: SimpleLine[] = json.data.lines.map((line: any) => {
       return this.lineFromDTO(line)
     })
 
-    return {
-      stops: stops,
-      lines: lines,
-    }
+    const stops: SimpleStop[] = json.data.stops.map((stop: any) => {
+      return this.stopFromDTO(stop, lines)
+    })
+
+    return stops
   }
 
   public static async getDeparturesNear(

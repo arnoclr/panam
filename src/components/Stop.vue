@@ -1,35 +1,24 @@
 <script setup lang="ts">
 import { computed, ref, defineEmits, watch } from "vue"
+import { sortLines } from "../utils/Lines"
 import { SimpleLine, SimpleStop } from "../services/Wagon"
 import LineIndicator from "./LineIndicator.vue"
 
+const MAX_DISPLAYED_LINES = 6
+
 interface StopProps {
   stop: SimpleStop
-  lines: SimpleLine[]
 }
 const emit = defineEmits<{
   (e: "selected", stopId: string, lineId: string): void
 }>()
 
-const { stop, lines } = defineProps<StopProps>()
-
-function sortLines(lines: SimpleLine[]): SimpleLine[] {
-  return lines.sort((a, b) => {
-    if (!isNaN(Number(a.id)) && !isNaN(Number(b.id))) {
-      return Number(a.id) - Number(b.id)
-    } else if (!isNaN(Number(a.id))) {
-      return -1
-    } else if (!isNaN(Number(b.id))) {
-      return 1
-    } else {
-      return a.id.localeCompare(b.id)
-    }
-  })
-}
+const { stop } = defineProps<StopProps>()
+const lines = computed<SimpleLine[]>(() => stop.lines)
 
 const groupedLines = computed(() => {
   const groups: { [key: string]: SimpleLine[] } = {}
-  lines.forEach((line) => {
+  lines.value.forEach((line) => {
     if (!groups[line.pictoPng]) {
       groups[line.pictoPng] = []
     }
@@ -52,7 +41,6 @@ function toggleGroup(mode: string) {
 watch(
   () => lines,
   () => {
-    // Reset expanded groups on lines change
     expandedGroups.value = {}
   },
   { deep: true }
@@ -70,18 +58,24 @@ watch(
           <img :src="String(mode)" alt="Mode icon" class="mode-icon" />
           <button
             class="line"
-            v-for="line in expandedGroups[mode] ? lines : lines.slice(0, 6)"
+            v-for="line in expandedGroups[mode]
+              ? lines
+              : lines.slice(0, MAX_DISPLAYED_LINES)"
             :key="line.id"
             @click="$emit('selected', stop.id, line.id)"
           >
-            <LineIndicator class="line-logo" :line="line" height="2vw" />
+            <LineIndicator
+              class="line-logo"
+              :line="line"
+              height="min(2vw,25px)"
+            />
           </button>
-          <div v-if="lines.length > 6" class="more-lines">
+          <div v-if="lines.length > MAX_DISPLAYED_LINES" class="more-lines">
             <button @click="toggleGroup(String(mode))">
               {{
                 expandedGroups[mode]
                   ? "Masquer"
-                  : `+ ${lines.length - 6} autres lignes`
+                  : `+ ${lines.length - MAX_DISPLAYED_LINES} autres lignes`
               }}
             </button>
           </div>
@@ -112,7 +106,7 @@ watch(
 }
 
 .mode-icon {
-  height: max(10px, 2vw);
+  height: min(25px, 2vw);
   margin-bottom: min(0.2vw, 5px);
 }
 
@@ -121,7 +115,7 @@ watch(
   flex-direction: row;
   flex-wrap: wrap;
   gap: min(0.2vw, 5px);
-  align-items: center;
+  align-items: flex-start;
 }
 button {
   margin: 0;
