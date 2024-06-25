@@ -1,28 +1,24 @@
 <script lang="ts" setup>
 import { ref } from "vue"
 import SearchModal from "./SearchModal.vue"
-import { Position } from "../services/Wagon"
+import { SimpleLine, SimpleStop } from "../services/Wagon"
 const lineName = ref<string>("")
-const isSearchModalOpen = ref<boolean>(false)
 const position = ref<string>("")
+const searchStopDialog = ref<InstanceType<typeof SearchModal> | null>(null)
 function fillFieldWithCurrentLocation() {
   navigator.geolocation.getCurrentPosition((p) => {
     const { latitude, longitude } = p.coords
     position.value = `${latitude}, ${longitude}`
   })
 }
-const handleSelection = (idLine: string, stopPosition: Position) => {
-  lineName.value = idLine
-  position.value = `${stopPosition.lat}, ${stopPosition.long}`
+const handleSelection = (stop: SimpleStop, line: SimpleLine | null) => {
+  lineName.value = line?.number || ""
+  position.value = `${stop.position.lat}, ${stop.position.long}`
 }
 </script>
 
 <template>
-  <SearchModal
-    :isOpen="isSearchModalOpen"
-    @selection="handleSelection"
-    @close="isSearchModalOpen = false"
-  />
+  <SearchModal @selected="handleSelection" ref="searchStopDialog" />
   <div class="forms">
     <form action="/" method="get">
       <section class="searchSection">
@@ -40,7 +36,7 @@ const handleSelection = (idLine: string, stopPosition: Position) => {
           </button>
         </label>
         <div>
-          <button type="button" @click="isSearchModalOpen = true">
+          <button type="button" @click="searchStopDialog?.openModal">
             Chercher un arrêt par le nom
           </button>
         </div>

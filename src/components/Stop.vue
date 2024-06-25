@@ -10,7 +10,7 @@ interface StopProps {
   stop: SimpleStop
 }
 const emit = defineEmits<{
-  (e: "selected", stopId: string, lineId: string): void
+  (e: "selected", stop: SimpleStop, line: SimpleLine | null): void
 }>()
 
 const { stop } = defineProps<StopProps>()
@@ -49,7 +49,7 @@ watch(
 
 <template>
   <div class="stop">
-    <button class="stop-name" @click="$emit('selected', stop.id, '')">
+    <button class="stop-name" @click="$emit('selected', stop, null)">
       {{ stop.name }}
     </button>
     <div class="stop-lines">
@@ -62,23 +62,25 @@ watch(
               ? lines
               : lines.slice(0, MAX_DISPLAYED_LINES)"
             :key="line.id"
-            @click="$emit('selected', stop.id, line.id)"
+            @click="$emit('selected', stop, line)"
           >
             <LineIndicator
               class="line-logo"
               :line="line"
-              height="min(2vw,25px)"
+              height="min(30px, 4vw)"
             />
           </button>
-          <div v-if="lines.length > MAX_DISPLAYED_LINES" class="more-lines">
-            <button @click="toggleGroup(String(mode))">
-              {{
-                expandedGroups[mode]
-                  ? "Masquer"
-                  : `+ ${lines.length - MAX_DISPLAYED_LINES} autres lignes`
-              }}
-            </button>
-          </div>
+          <button
+            @click="toggleGroup(String(mode))"
+            v-if="lines.length > MAX_DISPLAYED_LINES"
+            class="more-lines"
+          >
+            {{
+              expandedGroups[mode]
+                ? "Masquer"
+                : `+ ${lines.length - MAX_DISPLAYED_LINES} autres lignes`
+            }}
+          </button>
         </div>
       </div>
     </div>
@@ -88,7 +90,7 @@ watch(
 <style scoped>
 .stop-name {
   color: black;
-  font-size: min(2vw, 20px);
+  font-size: min(4vw, 25px);
   margin-bottom: min(0.5vw, 5px);
 }
 .stop-name:hover {
@@ -106,7 +108,7 @@ watch(
 }
 
 .mode-icon {
-  height: min(25px, 2vw);
+  height: min(30px, 4vw);
   margin-bottom: min(0.2vw, 5px);
 }
 
@@ -126,7 +128,7 @@ button {
 }
 
 .more-lines {
-  font-size: min(1.5vw, 15px);
+  font-size: min(2vw, 15px);
   color: grey;
   align-self: center;
 }
