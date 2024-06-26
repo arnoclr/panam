@@ -38,9 +38,8 @@ const hostname = window.location.hostname
 
 export class Wagon {
   private static BASE_URL = "https://api-wagon.arno.cl/gantry/"
-  private static LOCAL_BASE_URL = "http://localhost:8787/gantry/"
 
-private static get baseUrl(): string {
+  private static get baseUrl(): string {
     return Wagon.BASE_URL
   }
 
@@ -51,7 +50,7 @@ private static get baseUrl(): string {
 
     return "pist"
   }
-  
+
   private static positionFromDTO(positionDto: any): Position {
     return {
       lat: positionDto[0],
