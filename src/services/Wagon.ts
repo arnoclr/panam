@@ -40,10 +40,7 @@ export class Wagon {
   private static BASE_URL = "https://api-wagon.arno.cl/gantry/"
   private static LOCAL_BASE_URL = "http://localhost:8787/gantry/"
 
-  private static get baseUrl(): string {
-    if (hostname === "localhost") {
-      return Wagon.LOCAL_BASE_URL
-    }
+private static get baseUrl(): string {
     return Wagon.BASE_URL
   }
 
@@ -52,8 +49,9 @@ export class Wagon {
       return "vite"
     }
 
-    return "vite"
+    return "pist"
   }
+  
   private static positionFromDTO(positionDto: any): Position {
     return {
       lat: positionDto[0],
