@@ -83,7 +83,7 @@ span {
 
 .horizontalLines {
   position: relative;
-  width: var(--height);
+  min-width: var(--height);
 }
 
 .horizontalLines::before,
