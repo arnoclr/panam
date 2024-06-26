@@ -41,10 +41,12 @@ defineProps<{
 .squareFilled,
 .rectangleFilled,
 .horizontalLines {
-  display: grid;
-  place-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: var(--height);
 }
+
 .circleFilled,
 .squareFilled,
 .rectangleFilled {
@@ -58,29 +60,30 @@ defineProps<{
 }
 
 .rectangleFilled {
-  padding: 0 1.5em;
+  box-sizing: border-box;
+  min-width: var(--height);
+  padding: calc(var(--height) * 0.14) calc(var(--height) * 0.2);
 }
 
 .circleFilled {
   border-radius: 50%;
 }
 
-.squareFilled,
-.rectangleFilled {
+.squareFilled {
   border-radius: calc(var(--height) * 0.2);
 }
 
+.rectangleFilled span {
+  font-size: calc(var(--height) * 0.85);
+}
 span {
   font-size: calc(var(--height) * 0.7);
   font-weight: bold;
 }
 
-.circleFilled span {
-  letter-spacing: -0.05em;
-}
-
 .horizontalLines {
   position: relative;
+  min-width: var(--height);
 }
 
 .horizontalLines::before,
