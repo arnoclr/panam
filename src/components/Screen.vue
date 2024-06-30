@@ -134,7 +134,7 @@ onMounted(async () => {
     ></Header>
     <SuspendedService v-if="serviceIsSuspended"></SuspendedService>
     <EmptyState v-else-if="departures.length === 0"></EmptyState>
-    <div class="withDisruptions" v-else>
+    <div class="withDisruptions" :empty-panel="disruptions.length === 0" v-else>
       <TransitionGroup
         tag="section"
         name="horizontal"
@@ -229,6 +229,13 @@ article time {
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 1fr;
+  transition-property: grid-template-columns, grid-template-rows;
+  transition-duration: 2s;
+  transition-timing-function: cubic-bezier(0.28, 0.16, 0.03, 0.94);
+}
+
+.withDisruptions[empty-panel="true"] {
+  grid-template-rows: 1fr 0fr;
 }
 
 @media (max-height: 40vw) {
@@ -244,6 +251,10 @@ article time {
 @media (max-height: 60vw) {
   .withDisruptions {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .withDisruptions[empty-panel="true"] {
+    grid-template-columns: 1fr 0fr;
   }
 }
 </style>
