@@ -5,8 +5,9 @@ export interface SimpleLine {
   number: string
   backgroundColor: string
   textColor: string
-  backgroundShape: string
-  pictoPng: string
+  pictoSvg?: string
+  numberShapeSvg?: string
+  importance: number
 }
 
 export interface SimpleStop {
@@ -35,6 +36,12 @@ export interface SimpleDisruption {
 }
 
 const hostname = window.location.hostname
+
+function processSVG(svg: string): string {
+  return svg
+    .replace(/width="[^"]+"/, "")
+    .replace(/height="[^"]+"/, `height="100%"`)
+}
 
 export class Wagon {
   private static BASE_URL = "https://api-wagon.arno.cl/gantry/"
@@ -80,8 +87,9 @@ export class Wagon {
       number: lineDto.number,
       backgroundColor: lineDto.backgroundColor,
       textColor: lineDto.textColor,
-      backgroundShape: lineDto.shape,
-      pictoPng: lineDto.picto,
+      pictoSvg: processSVG(lineDto.modeSvg ?? ""),
+      numberShapeSvg: processSVG(lineDto.numberShapeSvg ?? ""),
+      importance: lineDto.importance,
     }
   }
 

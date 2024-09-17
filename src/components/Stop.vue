@@ -19,10 +19,10 @@ const lines = computed<SimpleLine[]>(() => stop.lines)
 const groupedLines = computed(() => {
   const groups: { [key: string]: SimpleLine[] } = {}
   lines.value.forEach((line) => {
-    if (!groups[line.pictoPng]) {
-      groups[line.pictoPng] = []
+    if (!groups[line.pictoSvg]) {
+      groups[line.pictoSvg] = []
     }
-    groups[line.pictoPng].push(line)
+    groups[line.pictoSvg].push(line)
   })
 
   Object.keys(groups).forEach((mode) => {
@@ -55,7 +55,7 @@ watch(
     <div class="stop-lines">
       <div v-for="(lines, mode) in groupedLines" :key="mode" class="mode-group">
         <div class="lines">
-          <img :src="String(mode)" alt="Mode icon" class="mode-icon" />
+          <div v-html="lines.at(0)?.pictoSvg" class="mode-icon"></div>
           <button
             class="line"
             v-for="line in expandedGroups[mode]
