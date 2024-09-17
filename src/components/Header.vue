@@ -12,7 +12,7 @@ defineProps<{
 <template>
   <header :style="{ '--line-color': toCSSColor(line.backgroundColor) }">
     <div role="group">
-      <img :src="line.pictoPng" alt="" />
+      <div v-html="line.pictoSvg" class="picto"></div>
       <LineIndicator :line="line" height="8vw"></LineIndicator>
     </div>
     <h1>{{ direction }}</h1>
@@ -40,7 +40,7 @@ h1 {
   margin: 0;
 }
 
-img {
+.picto {
   height: 8vw;
   width: auto;
 }

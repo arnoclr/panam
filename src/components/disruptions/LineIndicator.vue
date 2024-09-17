@@ -13,7 +13,7 @@ const sizeVw = computed(() => (props.size === "default" ? "5vw" : "2vw"))
 
 <template>
   <div role="group" :style="{ '--size-vw': sizeVw }">
-    <img :size="size" :src="disruption.line.pictoPng" />
+    <div class="picto" :size="size" v-html="disruption.line.pictoSvg"></div>
     <LineIndicator :height="sizeVw" :line="disruption.line" />
     <div class="icon" :blink="size === 'default'">
       <template v-if="size === 'small'">
@@ -162,7 +162,7 @@ const sizeVw = computed(() => (props.size === "default" ? "5vw" : "2vw"))
 </template>
 
 <style scoped>
-img {
+.picto {
   height: 100%;
 }
 
