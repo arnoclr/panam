@@ -19,10 +19,11 @@ const lines = computed<SimpleLine[]>(() => stop.lines)
 const groupedLines = computed(() => {
   const groups: { [key: string]: SimpleLine[] } = {}
   lines.value.forEach((line) => {
-    if (!groups[line.pictoSvg]) {
-      groups[line.pictoSvg] = []
+    const key = line.pictoSvg ?? ""
+    if (!groups[key]) {
+      groups[key] = []
     }
-    groups[line.pictoSvg].push(line)
+    groups[key].push(line)
   })
 
   Object.keys(groups).forEach((mode) => {

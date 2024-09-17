@@ -1,7 +1,5 @@
 <script lang="ts" setup>
 import type { SimpleLine } from "../services/Wagon"
-import { toCSSColor } from "../utils/Colors"
-import { toCamelCase } from "../utils/Strings"
 
 defineProps<{
   line: SimpleLine
