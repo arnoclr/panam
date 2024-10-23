@@ -51,8 +51,10 @@ export class Wagon {
   }
 
   private static get apiKey(): string {
-    if (hostname === "localhost") {
-      return "vite"
+    const url = new URL(window.location.href)
+    const apiKey = url.searchParams.get("apiKey")
+    if (apiKey) {
+      return apiKey
     }
 
     return "pist"
