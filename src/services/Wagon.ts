@@ -35,8 +35,6 @@ export interface SimpleDisruption {
   type: "worksite" | "info" | "incident" | "stoppedService"
 }
 
-const hostname = window.location.hostname
-
 function processSVG(svg: string): string {
   return svg
     .replace(/width="[^"]+"/, "")
