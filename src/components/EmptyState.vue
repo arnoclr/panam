@@ -1,17 +1,19 @@
 <template>
   <div>
-    <p>Temps d'attente indisponibles.</p>
+    <p>Information indisponible</p>
   </div>
 </template>
 
 <style scoped>
 div {
-  margin: 2rem;
-  padding: 1rem;
-  background-color: var(--station-text-color);
-  color: white;
-  font-size: 2rem;
-  height: fit-content;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--waiting-time-color);
+  font-size: min(3.5rem, 5vw);
+  font-weight: bold;
 }
 
 p {
