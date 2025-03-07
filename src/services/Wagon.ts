@@ -210,6 +210,33 @@ export class Wagon {
 
     return "info"
   }
+  /**
+   *
+   * @param disruptions - Liste des perturbations
+   * @param currentLineName - Nom de la ligne actuelle
+   * @returns boolean True si il y a une perturbation de type incident ou stoppedService sur la ligne actuelle
+   */
+  private static shouldOnlyShowDisruptionForCurrentLine(
+    disruptions: SimpleDisruption[],
+    currentLineName: string
+  ): boolean {
+    const targetTypes = ["incident", "stoppedService"]
+    // Nombre de perturbations nécessaires pour afficher UNIQUEMENT les perturbations sur la ligne actuelle
+    const numberOfDisruptionsNeeded = 3
+    // Retourne True si il y a une perturbation de type incident ou stoppedService sur la ligne actuelle
+    // Ou s'il y a plus de 3 perturbations sur la ligne actuelle
+    return (
+      disruptions.some((disruption) => {
+        return (
+          disruption.line.number === currentLineName &&
+          targetTypes.includes(disruption.type)
+        )
+      }) ||
+      disruptions.filter((disruption) => {
+        return disruption.line.number === currentLineName
+      }).length >= numberOfDisruptionsNeeded
+    )
+  }
 
   public static async getDisruptions(
     lat: number,
@@ -255,7 +282,16 @@ export class Wagon {
         type: this.getDisruptionType(disruption.cause, disruption.effect),
       })
     }
-
+    const urlSearchParams = new URLSearchParams(window.location.search)
+    const currentLineName = urlSearchParams.get("for")
+    if (
+      currentLineName &&
+      this.shouldOnlyShowDisruptionForCurrentLine(disruptions, currentLineName)
+    ) {
+      return disruptions.filter(
+        (disruption) => disruption.line.number === currentLineName
+      )
+    }
     return disruptions
   }
 }
