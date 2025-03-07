@@ -39,6 +39,7 @@ function processSVG(svg: string): string {
   return svg
     .replace(/width="[^"]+"/, "")
     .replace(/height="[^"]+"/, `height="100%"`)
+    .replaceAll('font-family="', 'font-weight="bold" font-family="Parisine, ')
 }
 
 export class Wagon {
