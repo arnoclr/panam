@@ -8,10 +8,15 @@ const props = defineProps<{
 }>()
 
 const rotatingDisruptions = ref<SimpleDisruption[]>([])
-const isAnimating = ref(true)
+const currentDisruption = ref<SimpleDisruption | null>(null)
+const nextDisruption = ref<SimpleDisruption | null>(null)
+const isTransitioning = ref(false)
 
 watchEffect(() => {
   rotatingDisruptions.value = [...filterDisruptions()]
+  if (rotatingDisruptions.value.length > 0 && !currentDisruption.value) {
+    currentDisruption.value = rotatingDisruptions.value[0]
+  }
 })
 
 function filterDisruptions() {
@@ -31,21 +36,29 @@ function enhanceDisruptionText(text: string): string {
   })
 }
 
-function triggerAnimation() {
-  isAnimating.value = false
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      isAnimating.value = true
-    })
-  })
+function triggerTransition() {
+  if (rotatingDisruptions.value.length <= 1) return
+  
+  // Get the next disruption
+  const currentIndex = rotatingDisruptions.value.findIndex(d => d === currentDisruption.value)
+  const nextIndex = (currentIndex + 1) % rotatingDisruptions.value.length
+  nextDisruption.value = rotatingDisruptions.value[nextIndex]
+  
+  // Start transition
+  isTransitioning.value = true
+  
+  // After transition completes, update current and reset state
+  setTimeout(() => {
+    currentDisruption.value = nextDisruption.value
+    nextDisruption.value = null
+    isTransitioning.value = false
+  }, 1200) // Match the CSS animation duration
 }
 
 onMounted(() => {
   const interval = setInterval(() => {
-    if (rotatingDisruptions.value.length > 0) {
-      const firstElement = rotatingDisruptions.value.shift()
-      rotatingDisruptions.value.push(firstElement!)
-      triggerAnimation()
+    if (rotatingDisruptions.value.length > 1) {
+      triggerTransition()
     }
   }, 10_000)
 
@@ -56,18 +69,29 @@ onMounted(() => {
 </script>
 
 <template>
-  <aside v-if="disruptions.length > 0" :appear="isAnimating">
+  <aside v-if="disruptions.length > 0">
     <header>
       <div class="current">
+        <!-- Current disruption (slides out) -->
         <LineIndicator
+          v-if="currentDisruption"
           class="indicator"
-          :disruption="rotatingDisruptions[0]"
+          :class="{ 'slide-out': isTransitioning }"
+          :disruption="currentDisruption"
+          size="default"
+        ></LineIndicator>
+        <!-- Next disruption (slides in) -->
+        <LineIndicator
+          v-if="nextDisruption && isTransitioning"
+          class="indicator slide-in"
+          :disruption="nextDisruption"
           size="default"
         ></LineIndicator>
       </div>
       <div role="row">
         <LineIndicator
           v-for="disruption in rotatingDisruptions.slice(1, 4)"
+          :key="disruption.description"
           :disruption="disruption"
           size="small"
           class="indicator"
@@ -75,7 +99,18 @@ onMounted(() => {
       </div>
     </header>
     <div class="content">
-      <p v-html="enhanceDisruptionText(rotatingDisruptions[0].description)"></p>
+      <!-- Current content (slides out) -->
+      <p 
+        v-if="currentDisruption"
+        :class="{ 'slide-out': isTransitioning }"
+        v-html="enhanceDisruptionText(currentDisruption.description)"
+      ></p>
+      <!-- Next content (slides in) -->
+      <p 
+        v-if="nextDisruption && isTransitioning"
+        class="slide-in"
+        v-html="enhanceDisruptionText(nextDisruption.description)"
+      ></p>
     </div>
   </aside>
 </template>
@@ -103,6 +138,7 @@ header {
   padding-bottom: 0;
   background-color: white;
   overflow: hidden;
+  position: relative;
 }
 
 .content {
@@ -114,6 +150,7 @@ header {
   padding: 0.8vw 2vw;
   padding-right: calc(env(safe-area-inset-right) + 2vw);
   font-size: var(--font-size);
+  position: relative;
 }
 
 .content p {
@@ -123,6 +160,10 @@ header {
   -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  position: absolute;
+  top: 0.8vw;
+  left: 2vw;
+  right: calc(env(safe-area-inset-right) + 2vw);
 }
 
 .content p:deep(time) {
@@ -141,28 +182,37 @@ header {
   overflow: hidden;
 }
 
-[appear="true"] .current .indicator,
-[appear="true"] [role="row"] .indicator {
-  animation: slide-to-left 1.6s cubic-bezier(0.21, 0.07, 0.49, 1);
+/* Enhanced slide animations */
+.slide-out {
+  animation: slide-out-left 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-[appear="true"] .content {
-  animation: slide-to-left-light 1s cubic-bezier(0.21, 0.07, 0.49, 1);
+.slide-in {
+  animation: slide-in-right 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-@keyframes slide-to-left {
+.current .slide-in {
+  position: absolute;
+  top: 1vw;
+  left: 2vw;
+  right: 3vw;
+}
+
+@keyframes slide-out-left {
   0% {
-    transform: translateX(100%);
+    transform: translateX(0);
+    opacity: 1;
   }
   100% {
-    transform: translateX(0);
+    transform: translateX(-100%);
+    opacity: 0;
   }
 }
 
-@keyframes slide-to-left-light {
+@keyframes slide-in-right {
   0% {
-    transform: translateX(4vw);
-    opacity: 0.5;
+    transform: translateX(100%);
+    opacity: 0;
   }
   100% {
     transform: translateX(0);

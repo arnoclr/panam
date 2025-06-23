@@ -9,15 +9,10 @@ const props = defineProps<{
 }>()
 
 const waitingMinutes = ref(props.at.diff(dayjs(), "minutes"))
-const minutes = ref<HTMLElement>()
+const displayedMinutes = ref(waitingMinutes.value)
+const isUpdating = ref(false)
 
-const keyframes = [{ transform: "scale(1.4)" }, { transform: "scale(1)" }]
-const { play } = useAnimate(minutes, keyframes, {
-  duration: 2000,
-  easing: "cubic-bezier(.21,.92,.49,.97)",
-})
-
-const showDots = computed(() => waitingMinutes.value < 0)
+const showDots = computed(() => displayedMinutes.value < 0)
 const blinking = ref(false)
 
 useIntervalFn(() => {
@@ -26,8 +21,25 @@ useIntervalFn(() => {
 }, 5000)
 
 watch(
-  () => waitingMinutes.value,
-  () => play()
+  waitingMinutes,
+  () => {
+    if (isUpdating.value) {
+      return
+    }
+
+    isUpdating.value = true
+
+    // Update the value at the peak of the shrink (1.5s mark when scale is at minimum)
+    setTimeout(() => {
+      displayedMinutes.value = waitingMinutes.value
+    }, 1500)
+
+    // End the animation after 3 seconds
+    setTimeout(() => {
+      isUpdating.value = false
+    }, 3000)
+  },
+  { immediate: false }
 )
 </script>
 
@@ -38,7 +50,7 @@ watch(
       <div class="dot"></div>
       <div class="dot"></div>
     </div>
-    <span :class="{ blinking }" ref="minutes">{{ waitingMinutes }}</span>
+    <span :class="{ blinking, updating: isUpdating }">{{ displayedMinutes }}</span>
   </time>
 </template>
 
@@ -54,6 +66,24 @@ time {
   display: grid;
   place-items: center;
   font-weight: bold;
+}
+
+.updating {
+  animation: waiting-time-update 3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes waiting-time-update {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(0.8);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 .blinking {
